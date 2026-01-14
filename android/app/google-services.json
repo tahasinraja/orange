@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1038935822022",
+    "project_id": "freelife-c4b93",
+    "storage_bucket": "freelife-c4b93.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038935822022:android:ce910d9757d853f0bf91c7",
+        "android_client_info": {
+          "package_name": "com.freelife.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_Zv3qNenV4TvTieaBk2g5rxcBJNZ-VjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
