@@ -113,11 +113,32 @@ class EditProfileScreenViewModel extends BaseViewModel {
         (e) => e.isDeleted == 0 && e.id == userData?.relationshipGoalId);
 
     // Religion
+    // selectedReligion = religions.firstWhereOrNull((e) =>
+    // e.isDeleted == 0 &&
+    // e.titleRemoveEmoji
+    //         .toLowerCase()
+    //         .trim() ==
+    //     userData?.religionKey
+    //         ?.toLowerCase()
+    //         .trim());
+
     selectedReligion = religions.firstWhereOrNull((e) =>
         e.isDeleted == 0 &&
         e.titleRemoveEmoji == userData?.religionKey?.removeEmojis.trim());
 
     // Languages
+    // selectedLanguages = (userData?.languageKeys ?? '')
+    // .split(',')
+    // .map((key) => languages.firstWhereOrNull((e) =>
+    //     e.isDeleted == 0 &&
+    //     e.title
+    //             ?.removeEmojis
+    //             .toLowerCase()
+    //             .trim() ==
+    //         key.toLowerCase().trim()))
+    // .whereType<Language>()
+    // .toList();
+
     selectedLanguages = (userData?.languageKeys ?? '')
         .split(',')
         .map((id) => languages.firstWhereOrNull((e) =>

@@ -118,7 +118,7 @@ class AssetRes {
   static const String map2 = "${images}map2.png";
   static const String map3 = "${images}map3.png";
   static const String loadingLottie = "${images}lf30_editor_pdbikagl.json";
-  static const String themeLabel = "${images}get_started1_label.png";
+  static const String themeLabel = "${images}app_icon_freelife.png";
   static const String getStarted2BG = "${images}get_started2_bg.png";
   static const String getStarted3BG = "${images}get_started3_bg.png";
   static const String getStarted3Marker = "${images}get_started3_marker.png";

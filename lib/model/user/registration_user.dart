@@ -559,11 +559,17 @@ class Images {
     _image = image;
   }
 
-  Images.fromJson(dynamic json) {
-    _id = json['id'];
-    _userId = json['user_id'];
-    _image = json['image'];
-  }
+Images.fromJson(dynamic json) {
+  _id = int.tryParse(json['id']?.toString() ?? '');
+  _userId = int.tryParse(json['user_id']?.toString() ?? '');
+  _image = json['image']?.toString();
+}
+
+  // Images.fromJson(dynamic json) {
+  //   _id = json['id'];
+  //   _userId = json['user_id'];
+  //   _image = json['image'];
+  // }
 
   int? _id;
   int? _userId;
@@ -618,17 +624,20 @@ class Story {
     _storyView = storyView;
   }
 
-  Story.fromJson(dynamic json) {
-    _id = json['id'];
-    _userId = json['user_id'];
-    _type = json['type'];
-    _duration = json['duration'];
-    _content = json['content'];
-    _viewByUserIds = json['view_by_user_ids'];
-    _createdAt = json['created_at'];
-    _updatedAt = json['updated_at'];
-    _storyView = json['storyView'];
-  }
+Story.fromJson(dynamic json) {
+  _id = int.tryParse(json['id']?.toString() ?? '');
+  _userId = int.tryParse(json['user_id']?.toString() ?? '');
+  _type = int.tryParse(json['type']?.toString() ?? '');
+  _duration = int.tryParse(json['duration']?.toString() ?? '');
+  _content = json['content']?.toString();
+  _viewByUserIds = json['view_by_user_ids']?.toString();
+  _createdAt = json['created_at']?.toString();
+  _updatedAt = json['updated_at']?.toString();
+  _storyView = json['storyView'] == true ||
+      json['storyView'] == 1 ||
+      json['storyView'] == '1';
+}
+
 
   int? _id;
   int? _userId;

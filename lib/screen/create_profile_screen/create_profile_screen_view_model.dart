@@ -157,11 +157,11 @@ print('🟢 Languages: ${languages.map((e) => e.title).toList()}');
   void _initializeUserPreferences() {
     // Interest selection
     List<String> savedInterest = userData?.interests?.split(',') ?? [];
-    interestList.forEach((element) {
+    for (var element in interestList) {
       if (savedInterest.contains('${element.id}')) {
         selectedInterest.add(element);
       }
-    });
+    }
 
     // Relationship goals – only assign if empty
     if (relationshipGoals.isEmpty) {
@@ -354,7 +354,7 @@ print('🟢 Languages: ${languages.map((e) => e.title).toList()}');
       notifyListeners();
       Get.to(() => FindMatches(model: this));
     } else {
-      init(userData!);
+     // init(userData!);
       Get.to(() => SelectInterest(model: this));
     }
   }
