@@ -36,11 +36,56 @@ class CreateProfileScreenViewModel extends BaseViewModel {
   GenderType selectedGenderType = GenderType.male;
   SettingData? settingData;
 
-  List<RelationshipGoals> relationshipGoals = [];
+  List<RelationshipGoals> relationshipGoals = [
+  RelationshipGoals(
+    id: 1,
+    title: 'Long Term',
+    description: 'Looking for a long-term relationship',
+    isDeleted: 0,
+  ),
+  RelationshipGoals(
+    id: 2,
+    title: 'Friendship',
+    description: 'Just friendship for now',
+    isDeleted: 0,
+  ),
+  RelationshipGoals(
+    id: 3,
+    title: 'Casual',
+    description: 'Casual dating',
+    isDeleted: 0,
+  ),
+];
+
   List<Interests> interestList = [];
   List<Interests> selectedInterest = [];
-  List<Religions> religions = [];
-  List<Language> languages = [];
+  List<Religions> religions = [
+  Religions(id: 1, title: 'Hindu', isDeleted: 0),
+  Religions(id: 2, title: 'Muslim', isDeleted: 0),
+  Religions(id: 3, title: 'Christian', isDeleted: 0),
+  Religions(id: 4, title: 'Sikh', isDeleted: 0),
+  Religions(id: 5, title: 'Buddhist', isDeleted: 0),
+  Religions(id: 6, title: 'Jain', isDeleted: 0),
+  Religions(id: 7, title: 'Other', isDeleted: 0),
+];
+
+ List<Language> languages = [
+  Language(id: 1, title: 'English', isDeleted: 0),
+  Language(id: 2, title: 'Hindi', isDeleted: 0),
+  Language(id: 3, title: 'Urdu', isDeleted: 0),
+  Language(id: 4, title: 'Punjabi', isDeleted: 0),
+  Language(id: 5, title: 'Bengali', isDeleted: 0),
+  Language(id: 6, title: 'Tamil', isDeleted: 0),
+  Language(id: 7, title: 'Telugu', isDeleted: 0),
+  Language(id: 8, title: 'Marathi', isDeleted: 0),
+  Language(id: 9, title: 'Gujarati', isDeleted: 0),
+  Language(id: 10, title: 'Malayalam', isDeleted: 0),
+  Language(id: 11, title: 'Kannada', isDeleted: 0),
+  Language(id: 12, title: 'Odia', isDeleted: 0),
+  Language(id: 13, title: 'Assamese', isDeleted: 0),
+  Language(id: 14, title: 'Other', isDeleted: 0),
+];
+
   List<Language> selectedLanguages = [];
   List<Photo> images = [];
   List<Photo> deletedImages = [];
@@ -53,16 +98,93 @@ class CreateProfileScreenViewModel extends BaseViewModel {
   UserData? userData;
 
   void init(UserData userData) async {
+    print('👉 init() called');
     this.userData = userData;
+
     fullnameController = TextEditingController(text: userData.fullname ?? '');
     bioController = TextEditingController(text: userData.bio ?? '');
     aboutController = TextEditingController(text: userData.about ?? '');
     selectedDob = userData.ageToDateTime;
-    settingData = SessionManager.instance.getSettings();
-    initImage();
 
+    // Try from cache
+    settingData = SessionManager.instance.getSettings();
+
+    // If not found → Manual default list (for test)
+    if (settingData == null) {
+      print('⏳ Settings not loaded, using manual default list...');
+      settingData = SettingData(
+        interests: [
+          Interests(id: 1, title: 'Music', isDeleted: 0),
+          Interests(id: 2, title: 'Travel', isDeleted: 0),
+          Interests(id: 3, title: 'Cooking', isDeleted: 0),
+        ],
+        relationshipGoals: [
+          RelationshipGoals(id: 1, title: 'Long Term', description: 'Long-term', isDeleted: 0),
+          RelationshipGoals(id: 2, title: 'Friendship', description: 'Friendship', isDeleted: 0),
+          RelationshipGoals(id: 3, title: 'Casual', description: 'Casual dating', isDeleted: 0),
+        ],
+      );
+      SessionManager.instance.setSettings(settingData!);
+    }
+
+    // Assign manually only if empty
+    if (relationshipGoals.isEmpty) {
+      relationshipGoals = settingData?.relationshipGoals
+              ?.where((e) => e.isDeleted == 0)
+              .toList() ?? [];
+    }
+
+    interestList = settingData?.interests
+            ?.where((e) => e.isDeleted == 0)
+            .toList() ?? [];
+
+
+print('🟢 Religions after initialize: ${religions.map((e) => e.title).toList()}');
+print('🟢 Languages: ${languages.map((e) => e.title).toList()}');
+
+    print('💡 relationshipGoals after init: ${relationshipGoals.map((e) => e.title).toList()}');
+    print('👉 Total interests: ${interestList.length}');
+    for (var i = 0; i < interestList.length; i++) {
+      print('Interest $i: ${interestList[i].title}');
+    }
+
+    initImage();
     _initializeUserPreferences();
+
     notifyListeners();
+  }
+
+  void _initializeUserPreferences() {
+    // Interest selection
+    List<String> savedInterest = userData?.interests?.split(',') ?? [];
+    interestList.forEach((element) {
+      if (savedInterest.contains('${element.id}')) {
+        selectedInterest.add(element);
+      }
+    });
+
+    // Relationship goals – only assign if empty
+    if (relationshipGoals.isEmpty) {
+      relationshipGoals = settingData?.relationshipGoals
+              ?.where((e) => e.isDeleted == 0)
+              .toList() ?? [];
+    }
+
+    // Religions and languages
+   if (religions.isEmpty) {
+  religions = settingData?.religions
+          ?.where((e) => e.isDeleted == 0)
+          .toList() ?? religions;
+}
+
+  if (languages.isEmpty) {
+  languages = settingData?.language
+          ?.where((e) => e.isDeleted == 0)
+          .toList() ?? languages;
+}
+
+
+    print('💡 relationshipGoals in _initializeUserPreferences: ${relationshipGoals.map((e) => e.title).toList()}');
   }
 
   void onDateOfBirthTap(BuildContext context) {
@@ -238,13 +360,16 @@ class CreateProfileScreenViewModel extends BaseViewModel {
   }
 
   void findMatches() {
+    if (interestList.isEmpty && userData != null) {
+      init(userData!); // 🔥 REQUIRED
+    }
     Get.to(() => SelectInterest(model: this));
   }
 
   void chooseInterest() {
-    if (selectedInterest.isEmpty) {
-      return CommonUI.snackBar(message: S.current.selectInterestsToContinue);
-    }
+    print('Selected interests count: ${selectedInterest.length}');
+    print('Selected interests: ${selectedInterest.map((e) => e.title).join(', ')}');
+
     if (settingData?.appdata?.isDating == 0) {
       Get.to(() => AddPhotos(model: this));
     } else {
@@ -280,34 +405,12 @@ class CreateProfileScreenViewModel extends BaseViewModel {
     Get.to(() => YourProfileReady(model: this));
   }
 
-  initImage() {
+  void initImage() {
     for (Images element in (userData?.images ?? [])) {
       if (element.image != null) {
         images.add(Photo(element.id ?? -1, XFile(element.image!)));
       }
     }
-  }
-
-  void _initializeUserPreferences() {
-    interestList =
-        settingData?.interests?.where((e) => e.isDeleted == 0).toList() ?? [];
-    List<String> savedInterest = userData?.interests?.split(',') ?? [];
-    interestList.toList().forEach((element) {
-      if (savedInterest.contains('${element.id}')) {
-        selectedInterest.add(element);
-      }
-    });
-
-    relationshipGoals = settingData?.relationshipGoals
-            ?.where((e) => e.isDeleted == 0)
-            .toList() ??
-        [];
-
-    religions =
-        settingData?.religions?.where((e) => e.isDeleted == 0).toList() ?? [];
-
-    languages =
-        settingData?.language?.where((e) => e.isDeleted == 0).toList() ?? [];
   }
 
   void tapFinalProfile() {

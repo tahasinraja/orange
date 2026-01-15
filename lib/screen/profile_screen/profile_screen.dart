@@ -14,6 +14,14 @@ class ProfileScreen extends StatelessWidget {
       },
       viewModelBuilder: () => ProfileScreenViewModel(),
       builder: (context, model, child) {
+        // 🔹 Loader state
+        if (model.isLoading || model.userData == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+
         return ProfileImageArea(
           userData: model.userData,
           pageController: model.pageController,

@@ -26,9 +26,18 @@ class ProfileScreenViewModel extends BaseViewModel {
     getSettingData();
     profileScreenApiCall();
   }
+  /// 🔹 BIO OPTIONAL HELPERS
+  bool get hasBio =>
+      userData?.bio != null && userData!.bio!.trim().isNotEmpty;
+
+      String get bioText =>
+      hasBio ? userData!.bio! : 'Bio not added';
+
+
 
   void profileScreenApiCall() async {
     isLoading = true;
+    notifyListeners(); // ✅ REQUIRED
     ApiProvider()
         .getProfile(userID: SessionManager.instance.getUserID())
         .then((value) async {

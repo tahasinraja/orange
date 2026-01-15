@@ -1,6 +1,7 @@
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:orange_ui/common/button/custom_text_button.dart';
+import 'package:orange_ui/common/common_ui.dart';
 import 'package:orange_ui/common/login_setup_view.dart';
 import 'package:orange_ui/generated/l10n.dart';
 import 'package:orange_ui/model/setting_model.dart';
@@ -14,8 +15,15 @@ import 'package:stacked/stacked.dart';
 class RelationshipGoal extends StatelessWidget {
   final UserData? userData;
   final CreateProfileScreenViewModel model;
+final bool showContinueButton; // ✅ optional button
+  final bool selectionMandatory; // ✅ selection mandatory or not
+  const RelationshipGoal({super.key, this.userData, 
+  
+  required this.model,
+  this.showContinueButton = true, // default: button visible
+    this.selectionMandatory = false, // default: selection optional
 
-  const RelationshipGoal({super.key, this.userData, required this.model});
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +56,27 @@ class RelationshipGoal extends StatelessWidget {
                       },
                     ),
             ),
-            CustomTextButton(
-                onTap: () => viewModel
-                    .onContinueTap(CreateProfileContinueTap.relationGoal))
+            // ✅ Show button only if showContinueButton = true
+            if (showContinueButton)
+              CustomTextButton(
+                onTap: () {
+                  // ✅ If selection is mandatory, show snackbar
+                  if (selectionMandatory &&
+                      viewModel.selectedRelationShipGoal == null) {
+                    CommonUI.snackBar(
+                        message: S.current.selectYourRelationshipGoal);
+                    return;
+                  }
+
+                  // ✅ Continue to next step
+                  viewModel.onContinueTap(
+                      CreateProfileContinueTap.relationGoal);
+                },
+              ),
+
+            // CustomTextButton(
+            //     onTap: () => viewModel
+            //         .onContinueTap(CreateProfileContinueTap.relationGoal))
           ],
         ),
       ),

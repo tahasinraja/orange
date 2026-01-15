@@ -16,36 +16,97 @@ class SelectInterest extends StatelessWidget {
   const SelectInterest({super.key, this.userData, required this.model});
 
   @override
-  Widget build(BuildContext context) {
+  
+   Widget build(BuildContext context) {
     return ViewModelBuilder<CreateProfileScreenViewModel>.reactive(
-      viewModelBuilder: () => model,
-      disposeViewModel: false,
-      builder: (context, viewModel, child) => LoginSetupView(
-        title: S.of(context).discoverLikemindedPeople,
-        description: 'Select Your interests, it helps with matching.',
-        child: Column(
-          children: [
-            Expanded(
-                child: viewModel.interestList.isEmpty
-                    ? ErrorTextWidget(S
-                        .of(context)
+  viewModelBuilder: () => model,
+  disposeViewModel: false,
+  onViewModelReady: (viewModel) {
+  if (viewModel.interestList.isEmpty) {
+    viewModel.init(viewModel.userData!);
+  }
+  print('🟢 Interest list ready: ${viewModel.interestList.length}');
+  for (var e in viewModel.interestList) {
+    print('Interest item: ${e.title}');
+  }
+},
+
+   // ✅ THIS IS REQUIRED
+  // onViewModelReady: (viewModel) {
+  //   if (viewModel.interestList.isEmpty) {
+  //     viewModel.init(viewModel.userData!);
+  //   }
+  // },
+  builder: (context, viewModel, child) {
+    // 🔴 DEBUG PRINT
+    print('Interest list length: ${viewModel.interestList.length}');
+    print('Interest list data: ${viewModel.interestList}');
+
+    return LoginSetupView(
+      title: S.of(context).discoverLikemindedPeople,
+      description: 'Select Your interests, it helps with matching.',
+      child: Column(
+        children: [
+          Expanded(
+            child: viewModel.interestList.isEmpty
+                ? ErrorTextWidget(
+                    S.of(context)
                         .pleaseAddInterestsInTheAdminPanelToContinue)
-                    : SingleChildScrollView(
-                        child: WrapListTiles<Interests>(
-                            onTap: viewModel.onSelectInterest,
-                            getText: (p0) => p0.title ?? '',
-                            items: viewModel.interestList,
-                            selectedItems: viewModel.selectedInterest),
-                      )),
-            CustomTextButton(
-              onTap: () =>
-                  viewModel.onContinueTap(CreateProfileContinueTap.interest),
-            )
-          ],
-        ),
+                : SingleChildScrollView(
+                    child: WrapListTiles<Interests>(
+                      onTap: viewModel.onSelectInterest,
+                      getText: (p0) => p0.title ?? '',
+                      items: viewModel.interestList,
+                      selectedItems: viewModel.selectedInterest,
+                    ),
+                  ),
+          ),
+          CustomTextButton(
+  title: 'Continue (Optional)',
+  onTap: () => viewModel.onContinueTap(CreateProfileContinueTap.interest),
+)
+
+          // CustomTextButton(
+          //   onTap: () => viewModel
+          //       .onContinueTap(CreateProfileContinueTap.interest),
+          // )
+        ],
       ),
     );
-  }
+  },
+);
+
+  //   return ViewModelBuilder<CreateProfileScreenViewModel>.reactive(
+  //     viewModelBuilder: () => model,
+  //     disposeViewModel: false,
+  //     builder: (context, viewModel, child) =>
+      
+  //      LoginSetupView(
+  //       title: S.of(context).discoverLikemindedPeople,
+  //       description: 'Select Your interests, it helps with matching.',
+  //       child: Column(
+  //         children: [
+  //           Expanded(
+  //               child: viewModel.interestList.isEmpty
+  //                   ? ErrorTextWidget(S
+  //                       .of(context)
+  //                       .pleaseAddInterestsInTheAdminPanelToContinue)
+  //                   : SingleChildScrollView(
+  //                       child: WrapListTiles<Interests>(
+  //                           onTap: viewModel.onSelectInterest,
+  //                           getText: (p0) => p0.title ?? '',
+  //                           items: viewModel.interestList,
+  //                           selectedItems: viewModel.selectedInterest),
+  //                     )),
+  //           CustomTextButton(
+  //             onTap: () =>
+  //                 viewModel.onContinueTap(CreateProfileContinueTap.interest),
+  //           )
+  //         ],
+  //       ),
+  //     ),
+  //   );
+   }
 }
 
 class WrapListTiles<T> extends StatelessWidget {
