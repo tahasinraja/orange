@@ -182,6 +182,40 @@ print('🟢 Languages: ${languages.map((e) => e.title).toList()}');
           ?.where((e) => e.isDeleted == 0)
           .toList() ?? languages;
 }
+  // =========================
+  // 🔥 PRESELECT RELIGION
+  // =========================
+  if (userData?.religionKey != null &&
+      userData!.religionKey!.isNotEmpty) {
+    selectedReligion = religions.firstWhereOrNull(
+      (e) =>
+          e.title?.toLowerCase().trim() ==
+          userData!.religionKey!.toLowerCase().trim(),
+    );
+  }
+
+  // =========================
+  // 🔥 PRESELECT LANGUAGES
+  // =========================
+  selectedLanguages.clear();
+
+  if (userData?.languageKeys != null &&
+      userData!.languageKeys!.isNotEmpty) {
+    final userLangs = userData!.languageKeys!
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .toList();
+
+    for (var lang in languages) {
+      if (userLangs.contains(lang.title?.toLowerCase())) {
+        selectedLanguages.add(lang);
+      }
+    }
+  }
+
+  print('✅ Selected Religion: ${selectedReligion?.title}');
+  print(
+      '✅ Selected Languages: ${selectedLanguages.map((e) => e.title).toList()}');
 
 
     print('💡 relationshipGoals in _initializeUserPreferences: ${relationshipGoals.map((e) => e.title).toList()}');

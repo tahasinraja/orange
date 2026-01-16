@@ -21,9 +21,22 @@ class EditProfileScreenViewModel extends BaseViewModel {
 
   EditProfileScreenViewModel(this.userData);
 
-  void init() {
-    getPrefSettings();
+ void init() async {
+  await _waitForSettings();
+  print("Settings loaded: ${SessionManager.instance.getSettings() != null}");
+  getPrefSettings();
+}
+
+
+  Future<void> _waitForSettings() async {
+  int retry = 0;
+
+  while (SessionManager.instance.getSettings() == null && retry < 10) {
+    await Future.delayed(const Duration(milliseconds: 300));
+    retry++;
   }
+}
+
 
   final selectCountryController = Get.find<SelectCountryController>();
   TextEditingController fullNameController = TextEditingController();
@@ -58,21 +71,63 @@ class EditProfileScreenViewModel extends BaseViewModel {
   List<Language> selectedLanguages = [];
 
   void getPrefSettings() async {
-    settingData = SessionManager.instance.getSettings();
+
+   // settingData = SessionManager.instance.getSettings();
+settingData = SessionManager.instance.getSettings();
+
+if (settingData == null) {
+  print("❌ Settings still null");
+  return;
+}
+
     interestList = (settingData?.interests ?? [])
         .where((element) => element.isDeleted == 0)
         .toList();
+
     relationshipGoals = (settingData?.relationshipGoals ?? [])
         .where((element) => element.isDeleted == 0)
         .toList();
-    religions = (settingData?.religions ?? [])
-        .where((element) => element.isDeleted == 0)
-        .toList();
-    languages = (settingData?.language ?? [])
-        .where((element) => element.isDeleted == 0)
-        .toList();
-    getLocalData();
-    notifyListeners();
+
+   // RELIGION LIST
+religions = (settingData?.religions?.isNotEmpty == true)
+    ? settingData!.religions!
+        .where((e) => e.isDeleted == 0)
+        .toList()
+    : [
+        Religions(id: 1, title: 'Hindu', isDeleted: 0),
+        Religions(id: 2, title: 'Muslim', isDeleted: 0),
+        Religions(id: 3, title: 'Christian', isDeleted: 0),
+        Religions(id: 4, title: 'Sikh', isDeleted: 0),
+        Religions(id: 5, title: 'Buddhist', isDeleted: 0),
+        Religions(id: 6, title: 'Jain', isDeleted: 0),
+        Religions(id: 7, title: 'Other', isDeleted: 0),
+      ];
+
+// LANGUAGE LIST
+languages = (settingData?.language?.isNotEmpty == true)
+    ? settingData!.language!
+        .where((e) => e.isDeleted == 0)
+        .toList()
+    : [
+        Language(id: 1, title: 'English', isDeleted: 0),
+        Language(id: 2, title: 'Hindi', isDeleted: 0),
+        Language(id: 3, title: 'Urdu', isDeleted: 0),
+        Language(id: 4, title: 'Punjabi', isDeleted: 0),
+        Language(id: 5, title: 'Bengali', isDeleted: 0),
+        Language(id: 6, title: 'Tamil', isDeleted: 0),
+        Language(id: 7, title: 'Telugu', isDeleted: 0),
+        Language(id: 8, title: 'Marathi', isDeleted: 0),
+        Language(id: 9, title: 'Gujarati', isDeleted: 0),
+        Language(id: 10, title: 'Malayalam', isDeleted: 0),
+        Language(id: 11, title: 'Kannada', isDeleted: 0),
+        Language(id: 12, title: 'Odia', isDeleted: 0),
+        Language(id: 13, title: 'Assamese', isDeleted: 0),
+        Language(id: 14, title: 'Other', isDeleted: 0),
+      ];
+
+getLocalData();
+notifyListeners();
+
   }
 
   void getLocalData() async {
@@ -122,9 +177,19 @@ class EditProfileScreenViewModel extends BaseViewModel {
     //         ?.toLowerCase()
     //         .trim());
 
+    // selectedReligion = religions.firstWhereOrNull((e) =>
+    //     e.isDeleted == 0 &&
+    //     e.titleRemoveEmoji == userData?.religionKey?.removeEmojis.trim());
     selectedReligion = religions.firstWhereOrNull((e) =>
-        e.isDeleted == 0 &&
-        e.titleRemoveEmoji == userData?.religionKey?.removeEmojis.trim());
+    e.isDeleted == 0 &&
+    e.titleRemoveEmoji
+            .trim()
+            .toLowerCase() ==
+        userData?.religionKey
+            ?.removeEmojis
+            .trim()
+            .toLowerCase());
+
 
     // Languages
     // selectedLanguages = (userData?.languageKeys ?? '')
@@ -139,14 +204,47 @@ class EditProfileScreenViewModel extends BaseViewModel {
     // .whereType<Language>()
     // .toList();
 
+    // selectedLanguages = (userData?.languageKeys ?? '')
+    //     .split(',')
+    //     .map((id) => languages.firstWhereOrNull((e) =>
+    //         e.isDeleted == 0 && e.title?.removeEmojis.trim() == id.trim()))
+    //     .whereType<Language>()
+    //     .toList();
     selectedLanguages = (userData?.languageKeys ?? '')
-        .split(',')
-        .map((id) => languages.firstWhereOrNull((e) =>
-            e.isDeleted == 0 && e.title?.removeEmojis.trim() == id.trim()))
-        .whereType<Language>()
-        .toList();
+    .split(',')
+    .map((key) => languages.firstWhereOrNull((e) =>
+        e.isDeleted == 0 &&
+        e.title
+                ?.removeEmojis
+                .trim()
+                .toLowerCase() ==
+            key.trim().toLowerCase()))
+    .whereType<Language>()
+    .toList();
+
 
     notifyListeners();
+    print("========== EDIT PROFILE DEBUG ==========");
+
+// Religion debug
+print("User religionKey: '${userData?.religionKey}'");
+print("Available religions:");
+for (var r in religions) {
+  print("→ id:${r.id} title:'${r.title}' clean:'${r.titleRemoveEmoji}'");
+}
+
+// Language debug
+print("User languageKeys: '${userData?.languageKeys}'");
+print("Available languages:");
+for (var l in languages) {
+  print("→ id:${l.id} title:'${l.title}' clean:'${l.title?.removeEmojis}'");
+}
+
+print("Selected Religion: ${selectedReligion?.title}");
+print("Selected Languages: ${selectedLanguages.map((e) => e.title).toList()}");
+
+print("========================================");
+
   }
 
   void onImageRemove(Images image, int index) {
@@ -154,7 +252,11 @@ class EditProfileScreenViewModel extends BaseViewModel {
     if (image.id != -1) {
       deleteIds.add("${image.id}");
     }
-    notifyListeners();
+    print("Selected Religion: ${selectedReligion?.title}");
+print("Selected Languages: ${selectedLanguages.map((e) => e.title).toList()}");
+
+notifyListeners();
+
   }
 
   void onAllScreenTap() {

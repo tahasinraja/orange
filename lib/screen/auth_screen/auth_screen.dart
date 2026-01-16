@@ -39,7 +39,7 @@ class AuthScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [ Image.asset('assets/images/backroungless_logo_freelive.png'
-                  ,height: 80,width: 150,),
+                  ,height: 120,width: 200,),
                   
                     // Image.asset(AssetRes.themeLabelWhite,
                     //     height: 50, width: 153, alignment: Alignment.center),
