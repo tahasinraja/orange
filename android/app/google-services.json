@@ -12,7 +12,28 @@
           "package_name": "com.freelife.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1038935822022-fvgakqktccjbd6n385leb4dokpd4qlsh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.freelife.app",
+            "certificate_hash": "f6dbf86316a04e1338594d98e28ec2aacf2dca11"
+          }
+        },
+        {
+          "client_id": "1038935822022-npfi00hv4coptl4l418g78r1tunl58l3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.freelife.app",
+            "certificate_hash": "7565bae5be7898fe091a4f08a8b9f43bf0ba6389"
+          }
+        },
+        {
+          "client_id": "1038935822022-4mqc9sahu7u30a7avnp65pcemhhkud3i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD_Zv3qNenV4TvTieaBk2g5rxcBJNZ-VjQ"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038935822022-4mqc9sahu7u30a7avnp65pcemhhkud3i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

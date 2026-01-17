@@ -59,7 +59,12 @@ class AuthScreen extends StatelessWidget {
                           SocialLoginCard(
                               image: AssetRes.googleLogo,
                               text: S.current.continueWithGoogle,
-                              onTap: viewModel.onGoogleTap),
+                              onTap: () {
+  debugPrint('👉 Google button tapped');
+  viewModel.onGoogleTap();
+},
+                          ),
+
                           SocialLoginCard(
                               image: AssetRes.icEmail,
                               text: S.of(context).continueWithEmail,
@@ -71,7 +76,11 @@ class AuthScreen extends StatelessWidget {
                               bgColor: ColorRes.black,
                               iconColor: ColorRes.white,
                               textColor: ColorRes.white,
-                              onTap: viewModel.onAppleTap,
+                            onTap: () {
+  debugPrint('👉Apple button tapped');
+  viewModel.onAppleTap();
+},
+
                             ),
                           const SizedBox(height: 15),
                           RichText(
@@ -90,6 +99,7 @@ class AuthScreen extends StatelessWidget {
                                       fontSize: 18),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
+                                      debugPrint('👉 login button tapped');
                                       viewModel.onLoginTap(0);
                                     },
                                 ),

@@ -42,6 +42,7 @@ class AuthScreenViewModel extends BaseViewModel {
     FirebaseNotificationManager.shared;
     pageController = PageController(initialPage: index);
     openEULASheet();
+    debugPrint('🔥 AuthScreenViewModel initialized, pageIndex: $index');
   }
 
   void openEULASheet() {
@@ -63,16 +64,28 @@ class AuthScreenViewModel extends BaseViewModel {
   }
 
   void onGoogleTap() async {
+    debugPrint('👉 Google button tapped');
     CommonUI.lottieLoader();
     UserCredential? credential;
     try {
+      debugPrint('🔥 Calling signInWithGoogle()...');
       credential = await signInWithGoogle();
-    } catch (e) {
+       debugPrint('✅ Google Sign-In returned credential: ${credential.user?.email}');
+    } catch (e,s) {
       log(e.toString());
+      debugPrint('❌ Google Sign-In ERROR: $e');
+      debugPrint('StackTrace: $s');
       Get.back();
     }
 
-    if (credential?.user == null) return;
+  if (credential?.user == null) {
+  debugPrint('⚠️ Google Sign-In returned null user');
+  return;
+}
+
+debugPrint('🔥 Proceeding to registration with Google user: ${credential?.user?.email}');
+
+     
     registration(
       email: credential?.user?.email ?? '',
       loginType: LoginType.google.value,
@@ -85,12 +98,14 @@ class AuthScreenViewModel extends BaseViewModel {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await signIn.authenticate(scopeHint: ['email']);
 
+    debugPrint('🔥 Google user obtained: ${googleUser.email}');
+
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
-
+debugPrint('🔥 FirebaseAuth credential created');
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
@@ -101,11 +116,13 @@ class AuthScreenViewModel extends BaseViewModel {
       required String fullName,
       required int loginType,
       Function(UserData? userData)? onCompletion}) {
+         debugPrint('🔥 Starting registration for: $email, loginType: $loginType'); // <-- add here
     FirebaseNotificationManager.shared.getNotificationToken(
       (token) {
         ApiProvider()
             .registration(email: email, fullName: fullName, deviceToken: token, loginType: loginType)
             .then((value) {
+               debugPrint('📌 Registration API response: ${value.status}, message: ${value.message}'); // <-- add here
           if (value.status == true) {
             Get.back();
             if (isRegistration) {
@@ -142,16 +159,29 @@ class AuthScreenViewModel extends BaseViewModel {
   }
 
   void onAppleTap() async {
+    debugPrint('👉 Apple button tapped');
     CommonUI.lottieLoader();
     UserCredential? credential;
     try {
+        debugPrint('🔥 Calling signInWithApple()...');
       credential = await signInWithApple();
+      debugPrint('✅ Apple Sign-In returned credential: ${credential.user?.email}');
+      
       log('EMAIL : ${credential.user?.email} FULLNAME : ${credential.user?.displayName ?? credential.user?.email?.split('@')[0]}');
-    } catch (e) {
+    } catch (e,s) {
       log('$e');
+       debugPrint('❌ Apple Sign-In ERROR: $e');
+      debugPrint('StackTrace: $s');
       Get.back();
     }
-    if (credential?.user == null) return;
+if (credential?.user == null) {
+  debugPrint('⚠️ Apple Sign-In returned null user');
+  return;
+}
+
+debugPrint('🔥 Proceeding to registration with Apple user: ${credential?.user?.email}');
+
+
     registration(
       email: credential?.user?.email ?? '',
       loginType: LoginType.apple.value,
@@ -160,15 +190,16 @@ class AuthScreenViewModel extends BaseViewModel {
   }
 
   Future<UserCredential> signInWithApple() async {
+   
     // Request credential for the currently signed in Apple account.
     final appleCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
     );
-
+ debugPrint('🔥 Apple ID credential obtained');
     // Create an `OAuthCredential` from the credential returned by Apple.
     final oauthCredential = OAuthProvider("apple.com")
         .credential(idToken: appleCredential.identityToken, accessToken: appleCredential.authorizationCode);
-
+ debugPrint('🔥 FirebaseAuth credential created from Apple');
     return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
   }
 
